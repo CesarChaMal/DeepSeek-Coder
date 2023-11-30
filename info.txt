@@ -1,0 +1,105 @@
+https://coder.deepseek.com/
+https://chat.deepseek.com/coder
+https://github.com/deepseek-ai/DeepSeek-Coder
+https://github.com/deepseek-ai/awesome-deepseek-coder
+
+
+python -m pip install --upgrade pip
+
+pip install virtualenv
+
+-- virtualenv env
+python -m venv venv
+
+-- windows
+venv\Scripts\activate
+
+-- linux
+source venv/bin/activate
+
+-- gitbash
+source venv/scripts/activate
+
+-- pip install -r requirements.txt
+pip install transformers torch
+
+
+python
+
+import sys
+print(sys.executable)
+
+python
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True).cuda()
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+pip install ipython  # For IPython
+pip install notebook # For Jupyter Notebook
+
+
+ipython
+
+import sys
+print(sys.executable)
+
+
+ipython
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-1.3b-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-1.3b-base", trust_remote_code=True)
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-5.7bmqa-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-5.7bmqa-base", trust_remote_code=True)
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt")
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True)
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt")
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+input_text = "#write a quick sort algorithm"
+inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+deactivate
