@@ -21,56 +21,86 @@ This Space demonstrates model [DeepSeek-Coder](https://huggingface.co/deepseek-a
 if not torch.cuda.is_available():
     DESCRIPTION += "\n<p>Running on CPU 🥶 This demo does not work on CPU.</p>"
 
+# At the global scope
+print("Is CUDA available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    # your existing code to initialize tokenizer
+    print("Tokenizer initialized")
 
 if torch.cuda.is_available():
     model_id = "deepseek-ai/deepseek-coder-6.7b-instruct"
     model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16, device_map="auto")
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     tokenizer.use_default_system_prompt = False
-    
+
 
 
 @spaces.GPU
 def generate(
-    message: str,
-    chat_history: list,
-    system_prompt: str,
-    max_new_tokens: int = 1024,
-    temperature: float = 0.6,
-    top_p: float = 0.9,
-    top_k: int = 50,
-    repetition_penalty: float = 1,
+        message: str,
+        chat_history: list,
+        system_prompt: str,
+        max_new_tokens: int = 1024,
+        temperature: float = 0.6,
+        top_p: float = 0.9,
+        top_k: int = 50,
+        repetition_penalty: float = 1,
 ) -> Iterator[str]:
-    conversation = []
-    if system_prompt:
-        conversation.append({"role": "system", "content": system_prompt})
-    for user, assistant in chat_history:
-        conversation.extend([{"role": "user", "content": user}, {"role": "assistant", "content": assistant}])
-    conversation.append({"role": "user", "content": message})
+    try:
+        # Debugging print statements
+        print("Inside generate, is tokenizer defined:", 'tokenizer' in globals())
+        print("Starting the generate function")
+        print("Message:", message)
+        print("Chat History:", chat_history)
+        print("System Prompt:", system_prompt)
+        print("Max New Tokens:", max_new_tokens)
 
-    input_ids = tokenizer.apply_chat_template(conversation, return_tensors="pt")
-    if input_ids.shape[1] > MAX_INPUT_TOKEN_LENGTH:
-        input_ids = input_ids[:, -MAX_INPUT_TOKEN_LENGTH:]
-        gr.Warning(f"Trimmed input from conversation as it was longer than {MAX_INPUT_TOKEN_LENGTH} tokens.")
-    input_ids = input_ids.to(model.device)
+        # Constructing the conversation
+        conversation = []
+        if system_prompt:
+            conversation.append({"role": "system", "content": system_prompt})
+        for user, assistant in chat_history:
+            conversation.extend([{"role": "user", "content": user}, {"role": "assistant", "content": assistant}])
+        conversation.append({"role": "user", "content": message})
 
-    streamer = TextIteratorStreamer(tokenizer, timeout=10.0, skip_prompt=True, skip_special_tokens=True)
-    generate_kwargs = dict(
-        {"input_ids": input_ids},
-        streamer=streamer,
-        max_new_tokens=max_new_tokens,
-        do_sample=False,
-        num_beams=1,
-        repetition_penalty=repetition_penalty,
-        eos_token_id=32021
-    )
-    t = Thread(target=model.generate, kwargs=generate_kwargs)
-    t.start()
+        # Check if apply_chat_template exists
+        if hasattr(tokenizer, 'apply_chat_template'):
+            print("apply_chat_template method exists in tokenizer")
+            input_ids = tokenizer.apply_chat_template(conversation, return_tensors="pt")
+        else:
+            print("apply_chat_template method does not exist in tokenizer")
+            return
 
-    outputs = []
-    for text in streamer:
-        outputs.append(text)
-        yield "".join(outputs).replace("<|EOT|>","")
+        # Additional debugging information
+        print("Input IDs:", input_ids)
+
+        if input_ids.shape[1] > MAX_INPUT_TOKEN_LENGTH:
+            input_ids = input_ids[:, -MAX_INPUT_TOKEN_LENGTH:]
+            gr.Warning(f"Trimmed input from conversation as it was longer than {MAX_INPUT_TOKEN_LENGTH} tokens.")
+        input_ids = input_ids.to(model.device)
+
+        # Generate response
+        streamer = TextIteratorStreamer(tokenizer, timeout=10.0, skip_prompt=True, skip_special_tokens=True)
+        generate_kwargs = dict(
+            {"input_ids": input_ids},
+            streamer=streamer,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            num_beams=1,
+            repetition_penalty=repetition_penalty,
+            eos_token_id=32021
+        )
+        t = Thread(target=model.generate, kwargs=generate_kwargs)
+        t.start()
+
+        outputs = []
+        for text in streamer:
+            outputs.append(text)
+            yield "".join(outputs).replace("", "")
+
+    except Exception as e:
+        print("An error occurred:", e)
+        raise e
 
 
 chat_interface = gr.ChatInterface(

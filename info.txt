@@ -20,7 +20,7 @@ source venv/bin/activate
 -- gitbash
 source venv/scripts/activate
 
--- pip install -r requirements.txt
+pip install -r requirements.txt
 pip install transformers torch
 
 
